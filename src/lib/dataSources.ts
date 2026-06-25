@@ -163,7 +163,7 @@ function parseEspnScoreboard(scoreboard: any): { teams: Team[]; matches: Match[]
       awayScore: hasRealScore ? Number(away.score) : undefined,
       homeConduct: conduct[home.team.id] ?? 0,
       awayConduct: conduct[away.team.id] ?? 0,
-      locked: hasRealScore,
+      locked: status === "completed",
       source: "espn"
     });
   }
@@ -407,7 +407,7 @@ function collectMatchMarkets(matches: Match[], teams: Team[], polymarketMarkets:
   const markets: Record<string, MatchMarket> = {};
 
   for (const match of matches) {
-    if (match.locked) {
+    if (match.status !== "scheduled") {
       continue;
     }
 
@@ -433,7 +433,7 @@ function addPredictions(matches: Match[], teams: Team[], matchMarkets: Record<st
   const teamsById = Object.fromEntries(teams.map((team) => [team.id, team]));
 
   return matches.map((match) => {
-    if (match.locked) {
+    if (match.status !== "scheduled") {
       return match;
     }
 

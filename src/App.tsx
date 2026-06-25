@@ -191,6 +191,7 @@ function useColumnCount(): number {
 
 function sourceLabel(match: MatchWithScore): string {
   if (match.source === "manual") return "Edited";
+  if (match.status === "live" && match.source === "espn") return "Live";
   if (match.locked) return match.status === "live" ? "Live" : "Result";
   if (match.prediction?.method === "polymarket") return "Polymarket";
   return "Model";
@@ -198,6 +199,7 @@ function sourceLabel(match: MatchWithScore): string {
 
 function sourceClass(match: MatchWithScore): string {
   if (match.source === "manual") return "manual";
+  if (match.status === "live" && match.source === "espn") return "espn";
   if (match.locked) return "espn";
   return match.prediction?.method === "polymarket" ? "polymarket" : "model";
 }
@@ -248,6 +250,27 @@ function App() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(overrides));
   }, [overrides]);
+
+  useEffect(() => {
+    if (!data) return;
+
+    const completedMatchIds = new Set(
+      data.matches.filter((match) => match.status === "completed").map((match) => match.id)
+    );
+    if (!completedMatchIds.size) return;
+
+    setOverrides((current) => {
+      let changed = false;
+      const next = { ...current };
+      for (const matchId of Object.keys(next)) {
+        if (completedMatchIds.has(matchId)) {
+          delete next[matchId];
+          changed = true;
+        }
+      }
+      return changed ? next : current;
+    });
+  }, [data]);
 
   useEffect(() => {
     localStorage.setItem(PICKS_KEY, JSON.stringify(bracketPicks));
@@ -330,15 +353,16 @@ function App() {
   const stats = useMemo(() => {
     const matches = data?.matches ?? [];
     return {
-      real: matches.filter((match) => match.locked).length,
-      polymarket: matches.filter((match) => !match.locked && match.prediction?.method === "polymarket").length,
+      real: matches.filter((match) => match.status === "completed").length,
+      live: matches.filter((match) => match.status === "live").length,
+      polymarket: matches.filter((match) => match.status === "scheduled" && match.prediction?.method === "polymarket").length,
       edited: Object.keys(overrides).length + Object.keys(bracketPicks).length
     };
   }, [data, overrides, bracketPicks]);
   const championId = projection?.bracket.find((match) => match.id === "M104")?.winnerTeamId;
 
   const updateScore = (match: MatchWithScore, side: "home" | "away", value: number) => {
-    if (match.locked) return;
+    if (match.status === "completed" || match.locked) return;
     const nextValue = Math.max(0, Math.min(20, Number.isFinite(value) ? value : 0));
     setOverrides((current) => ({
       ...current,
@@ -471,6 +495,11 @@ function App() {
             <span className="stat-chip">
               <b>{stats.real}</b> results in
             </span>
+            {stats.live > 0 ? (
+              <span className="stat-chip">
+                <b>{stats.live}</b> live editable
+              </span>
+            ) : null}
             <span className="stat-chip">
               <b>{stats.polymarket}</b> market-priced
             </span>
@@ -780,6 +809,7 @@ function ScoreEditor({
   const home = teamsById[match.homeTeamId];
   const away = teamsById[match.awayTeamId];
   const marketUrl = match.prediction?.method === "polymarket" ? polymarketEventUrl(match.prediction.marketSlug) : undefined;
+  const resetTitle = match.status === "live" ? "Reset to live score" : "Reset to prediction";
 
   return (
     <div className={`match-row ${match.locked ? "locked" : ""}`}>
@@ -789,7 +819,7 @@ function ScoreEditor({
           {formatDate(match.date)}
         </span>
         {match.source === "manual" ? (
-          <button className="match-source manual reset" onClick={() => onReset(match.id)} title="Reset to prediction">
+          <button className="match-source manual reset" onClick={() => onReset(match.id)} title={resetTitle}>
             <RotateCcw size={11} />
             Edited
           </button>

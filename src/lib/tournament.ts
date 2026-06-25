@@ -223,6 +223,15 @@ export function materializeMatches(
   random?: () => number
 ): MatchWithScore[] {
   return matches.map((match) => {
+    if (match.status === "completed" && typeof match.homeScore === "number" && typeof match.awayScore === "number") {
+      return {
+        ...match,
+        locked: true,
+        homeScore: match.homeScore,
+        awayScore: match.awayScore
+      };
+    }
+
     const override = overrides[match.id];
 
     if (override) {

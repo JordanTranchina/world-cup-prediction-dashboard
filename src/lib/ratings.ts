@@ -92,7 +92,7 @@ export function addModelRatings(
 
   const marketAdjustments = Object.fromEntries(teams.map((team) => [team.id, 0])) as Record<string, number>;
   const pricedMatches = matches
-    .filter((match) => !match.locked && matchMarkets[match.id])
+    .filter((match) => match.status === "scheduled" && matchMarkets[match.id])
     .map((match) => {
       const expected = matchMarkets[match.id].expectedHome;
       return {

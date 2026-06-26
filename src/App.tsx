@@ -1467,11 +1467,11 @@ function ScheduleRow({
   return (
     <div className={`match-row schedule-row ${entry.status === "live" ? "live" : ""}`}>
       <div className="match-meta">
-        <span className="schedule-kickoff">
-          {kickoffTime}
-          {entry.status === "live" ? <em className="schedule-live">Live</em> : null}
-        </span>
-        <div className="schedule-meta">
+        <div className="schedule-meta-start">
+          <span className="schedule-kickoff">
+            {kickoffTime}
+            {entry.status === "live" ? <em className="schedule-live">Live</em> : null}
+          </span>
           {entry.kind === "group" && entry.group ? (
             <button
               type="button"
@@ -1483,6 +1483,8 @@ function ScheduleRow({
           ) : (
             <span className="schedule-stage">{entry.stageLabel}</span>
           )}
+        </div>
+        <div className="schedule-meta-end">
           {entry.kind === "knockout" ? (
             <span className="schedule-projected-teams">Projected teams</span>
           ) : null}

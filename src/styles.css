@@ -1538,13 +1538,24 @@ h2 {
   text-transform: uppercase;
 }
 
-.schedule-meta {
+.schedule-meta-start,
+.schedule-meta-end {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: flex-end;
   gap: 8px 12px;
   min-width: 0;
+}
+
+.schedule-meta-start {
+  flex: 1 1 auto;
+  justify-content: flex-start;
+}
+
+.schedule-meta-end {
+  flex: 0 1 auto;
+  justify-content: flex-end;
+  margin-left: auto;
   color: var(--faint);
   font-size: 11.5px;
 }

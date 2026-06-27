@@ -174,7 +174,7 @@ select:focus-visible,
   z-index: 1;
   width: min(1420px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 0 0 40px;
+  padding: 0 0 18px;
 }
 
 .app-loading,
@@ -1905,7 +1905,7 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
   margin-top: 18px;
   padding: 0;
   color: var(--faint);
@@ -1970,17 +1970,40 @@ h2 {
     position: static;
     grid-auto-flow: column;
     grid-auto-columns: max-content;
+    gap: 8px;
     overflow-x: auto;
     padding-left: 0;
-    padding-bottom: 8px;
+    padding-bottom: 10px;
     border-left: 0;
     border-bottom: 1px solid var(--line);
+  }
+
+  .method-toc a {
+    padding: 7px 13px;
+    white-space: nowrap;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .method-toc a.active {
+    color: var(--accent);
+    border-color: var(--accent-line);
+    background: var(--accent-soft);
   }
 
   .section-heading {
     flex-direction: column;
     align-items: flex-start;
     gap: 6px;
+  }
+
+  /* Keep the "Title odds" heading and its Polymarket toggle on one line */
+  .section-heading.compact:not(.path-heading) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
   }
 
   .probability-columns {
@@ -1994,7 +2017,7 @@ h2 {
   }
 
   .topbar {
-    position: static;
+    position: relative;
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
@@ -2004,8 +2027,9 @@ h2 {
   }
 
   .topbar-actions {
+    position: static;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: 1fr;
     gap: 8px;
   }
 
@@ -2016,10 +2040,25 @@ h2 {
   .segmented button {
     flex: 1;
     min-width: 0;
+    justify-content: center;
     padding: 0 10px;
+    gap: 7px;
   }
 
-  .segmented button span,
+  /* Methodology becomes an icon-only button, pinned next to the brand */
+  .method-link {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 44px;
+    height: 44px;
+    min-height: 0;
+    padding: 0;
+    justify-content: center;
+    border-color: var(--line);
+    background: rgba(255, 255, 255, 0.025);
+  }
+
   .method-link span {
     display: none;
   }
@@ -2069,9 +2108,14 @@ h2 {
   }
 
   .app-footer {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 7px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .thirds-panel .qualified-badge {
+    display: none;
   }
 }
 

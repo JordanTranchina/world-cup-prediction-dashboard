@@ -918,7 +918,7 @@ function BracketView({
     <section className="bracket-section">
       <div className="section-title">
         <div>
-          <span className="section-kicker">Knockout · M73–M104</span>
+          <span className="section-kicker">Knockout</span>
           <h2>Scenario bracket</h2>
         </div>
         <div className="bracket-actions">

@@ -360,7 +360,6 @@ function App() {
       edited: Object.keys(overrides).length + Object.keys(bracketPicks).length
     };
   }, [data, overrides, bracketPicks]);
-  const championId = projection?.bracket.find((match) => match.id === "M104")?.winnerTeamId;
 
   const updateScore = (match: MatchWithScore, side: "home" | "away", value: number) => {
     if (match.status === "completed" || match.locked) return;
@@ -495,27 +494,15 @@ function App() {
           </section>
 
           <section className="status-strip">
-            <span className="stat-chip">
-              <b>{stats.real}</b> results in
-            </span>
             {stats.live > 0 ? (
               <span className="stat-chip">
                 <b>{stats.live}</b> live editable
               </span>
             ) : null}
-            <span className="stat-chip">
-              <b>{stats.polymarket}</b> market-priced
-            </span>
             {stats.edited > 0 ? (
               <button className="stat-chip edited" onClick={resetAll} title="Reset all your edits">
                 <b>{stats.edited}</b> {stats.edited > 1 ? "edits" : "edit"} · reset
               </button>
-            ) : null}
-            {championId ? (
-              <span className="stat-chip champion">
-                <Trophy size={13} />
-                Projected winner · {teamsById[championId]?.abbreviation ?? teamsById[championId]?.shortName}
-              </span>
             ) : null}
             <span className="updated-at">{data?.loadedAt ? `Updated ${formatDate(data.loadedAt)}` : ""}</span>
           </section>
@@ -646,6 +633,14 @@ function TournamentView({
 
   return (
     <section className="tournament-layout">
+      <BracketView
+        bracket={bracket}
+        bracketPicks={bracketPicks}
+        teamsById={teamsById}
+        onPickWinner={onPickWinner}
+        onResetBracket={onResetBracket}
+      />
+
       <div className="section-heading">
         <div>
           <span className="section-kicker">Group stage</span>
@@ -723,14 +718,6 @@ function TournamentView({
           })}
         </div>
       </aside>
-
-      <BracketView
-        bracket={bracket}
-        bracketPicks={bracketPicks}
-        teamsById={teamsById}
-        onPickWinner={onPickWinner}
-        onResetBracket={onResetBracket}
-      />
     </section>
   );
 }
@@ -937,8 +924,7 @@ function BracketView({
         </div>
       </div>
       <p className="bracket-hint">
-        This bracket is built directly from the group standings and best-third cut line above. The seed labels show why each
-        tie exists; probabilistic opponent distributions live in the Probabilities view.
+        Click a team to send it through — the whole bracket recomputes from your pick.
       </p>
       <div className="bracket-scroll">
         <div className="bracket-head">
